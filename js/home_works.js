@@ -32,7 +32,7 @@ gmailInput.addEventListener('keydown', (event) => {
   }
 })
 
-//move block animation
+// Move block animation
 
 const block = document.querySelector('.child_block')
 const widthChildBlock = block.offsetWidth
@@ -40,15 +40,72 @@ const widthParentBlock = document.querySelector('.parent_block').offsetWidth
 console.log(widthParentBlock)
 
 let leftPosition = 0
+let topPosition = 0
 
 function moveBlock(block) {
-  if (leftPosition < (widthParentBlock - widthChildBlock)) {
+  if (leftPosition <= (widthParentBlock - widthChildBlock-1) && topPosition === 0) {
     block.style.left = leftPosition + 'px'
-    leftPosition ++ 
+    leftPosition ++
+    // console.log(`left: ${leftPosition}`);
     setTimeout(() => {
       moveBlock(block)
-    }, 15);
+    }, 5);
+  } else if (leftPosition === (widthParentBlock - widthChildBlock) && topPosition <= (widthParentBlock - widthChildBlock-1)) {
+    block.style.top = topPosition + 'px'
+    topPosition ++ 
+    // console.log(`top: ${topPosition}`);
+    setTimeout(() => {
+      moveBlock(block)
+    }, 5);
+  } else if (leftPosition <= (widthParentBlock - widthChildBlock) && leftPosition >= 1) {
+    block.style.left = leftPosition + 'px'
+    leftPosition --
+    // console.log(`left: ${leftPosition}`);
+    setTimeout(() => {
+      moveBlock(block)
+    }, 5);
+  } else if (leftPosition === 0 && topPosition <= (widthParentBlock - widthChildBlock)) {
+    block.style.top = topPosition + 'px'
+    topPosition --
+    // console.log(`top: ${topPosition}`);
+    setTimeout(() => {
+      moveBlock(block)
+    }, 5);
   }
 }
 
 moveBlock(block)
+
+// Stopwatch
+
+const startBtn = document.querySelector('#start')
+const stopBtn = document.querySelector('#stop')
+const resetBtn = document.querySelector('#reset')
+
+const timer = document.querySelector('#secondsS')
+
+let time = 0
+
+function startEvent() {
+  startBtn.removeEventListener('click', startEvent)
+  timer.innerText = time
+  return interval = setInterval(() => {
+    time++
+    timer.innerText = time
+  }, 1000)
+}
+
+startBtn.addEventListener('click', startEvent)
+
+
+stopBtn.addEventListener('click', () => {
+  startBtn.addEventListener('click', startEvent)
+  clearInterval(interval)
+})
+
+resetBtn.addEventListener('click', () => {
+  clearInterval(interval)
+  time = 0
+  timer.innerText = time
+  startBtn.addEventListener('click', startEvent)
+})
