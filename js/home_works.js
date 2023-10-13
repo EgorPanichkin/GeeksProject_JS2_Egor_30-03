@@ -37,6 +37,8 @@ gmailInput.addEventListener('keydown', (event) => {
 const block = document.querySelector('.child_block')
 const widthChildBlock = block.offsetWidth
 const widthParentBlock = document.querySelector('.parent_block').offsetWidth
+const heightChildBlock = block.offsetHeight
+const heightParentBlock = document.querySelector('.parent_block').offsetHeight
 console.log(widthParentBlock)
 
 let leftPosition = 0
@@ -50,7 +52,7 @@ function moveBlock(block) {
     setTimeout(() => {
       moveBlock(block)
     }, 5);
-  } else if (leftPosition === (widthParentBlock - widthChildBlock) && topPosition <= (widthParentBlock - widthChildBlock-1)) {
+  } else if (leftPosition === (widthParentBlock - widthChildBlock) && topPosition <= (heightParentBlock - heightChildBlock-1)) {
     block.style.top = topPosition + 'px'
     topPosition ++ 
     // console.log(`top: ${topPosition}`);
@@ -64,7 +66,7 @@ function moveBlock(block) {
     setTimeout(() => {
       moveBlock(block)
     }, 5);
-  } else if (leftPosition === 0 && topPosition <= (widthParentBlock - widthChildBlock)) {
+  } else if (leftPosition === 0 && topPosition <= (heightParentBlock - heightChildBlock)) {
     block.style.top = topPosition + 'px'
     topPosition --
     // console.log(`top: ${topPosition}`);
