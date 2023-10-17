@@ -37,3 +37,57 @@ phoneButton.addEventListener('click', () => {
     phoneResult.style.color = 'red'
   }
 })
+
+
+
+// Tab slider
+
+const tabContent = document.querySelectorAll('.tab_content_block')
+const tabsParent = document.querySelector('.tab_content_items')
+const tabs = document.querySelectorAll('.tab_content_item')
+
+
+function hideTabContent() {
+  tabContent.forEach((tabBlock) => {
+    tabBlock.style.display = 'none'
+  })
+  tabs.forEach((tabItem) => {
+    tabItem.classList.remove('tab_content_item_active')
+  })
+}
+
+function showTabContent(indexElemrnt = 0) {
+  tabContent[indexElemrnt].style.display = 'block'
+  tabs[indexElemrnt].classList.add('tab_content_item_active')
+}
+
+hideTabContent()
+showTabContent(0)
+
+tabsParent.addEventListener('click', (event) => {
+  if (event.target.classList.contains('tab_content_item')){
+    tabs.forEach((tabItem, tabIndex) => {
+      if (event.target === tabItem) {
+        hideTabContent()
+        showTabContent(tabIndex)
+        // console.log(tabs);
+      }
+    })
+  }
+})
+
+// Auto Tab Slider
+
+function autoShow(activeIndex) {
+  setInterval(() => {
+    if (activeIndex < tabs.length-1) {
+      activeIndex++
+    } else {
+      activeIndex = 0
+    }
+    hideTabContent()
+    showTabContent(activeIndex)
+  }, 1000);
+}
+
+autoShow(0)
