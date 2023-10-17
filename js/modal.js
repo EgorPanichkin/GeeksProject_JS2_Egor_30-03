@@ -31,7 +31,7 @@ setTimeout(() => {
 function modalScrollTrigger() {
   // console.log(document.body.offsetHeight);
   // console.log(scrollY);
-  if (scrollY > 1550) {
+  if (scrollY > document.body.offsetHeight - 800) {
     console.log('bottom');
     openModal()
     document.removeEventListener('scroll', modalScrollTrigger)
