@@ -45,7 +45,7 @@ phoneButton.addEventListener('click', () => {
 const tabContent = document.querySelectorAll('.tab_content_block')
 const tabsParent = document.querySelector('.tab_content_items')
 const tabs = document.querySelectorAll('.tab_content_item')
-
+let activeTab = 0
 
 function hideTabContent() {
   tabContent.forEach((tabBlock) => {
@@ -69,8 +69,8 @@ tabsParent.addEventListener('click', (event) => {
     tabs.forEach((tabItem, tabIndex) => {
       if (event.target === tabItem) {
         hideTabContent()
+        activeTab = tabIndex
         showTabContent(tabIndex)
-        // console.log(tabs);
       }
     })
   }
@@ -78,16 +78,87 @@ tabsParent.addEventListener('click', (event) => {
 
 // Auto Tab Slider
 
-function autoShow(activeIndex) {
-  setInterval(() => {
-    if (activeIndex < tabs.length-1) {
-      activeIndex++
-    } else {
-      activeIndex = 0
-    }
-    hideTabContent()
-    showTabContent(activeIndex)
-  }, 1000);
+function autoShow() {
+  hideTabContent()
+  activeTab = (activeTab + 1) % tabs.length
+  showTabContent(activeTab)
 }
 
-autoShow(0)
+setInterval(() => {autoShow()}, 2000);
+
+// Converter
+
+// const somInput = document.querySelector('#som')
+// const usdInput = document.querySelector('#usd')
+// let convertObj
+
+// function converterChanges(elementValue, targetElement, isTrue) {
+//   elementValue.oninput = () => {
+//     const xhr = new XMLHttpRequest()
+//     xhr.open('GET', '../data/converter.json')
+//     xhr.setRequestHeader('Content-type', 'application/json')
+//     xhr.send()
+//     xhr.onload = () => {
+//       convertObj = JSON.parse(xhr.response)
+//       if (isTrue) {
+//         targetElement.value = (elementValue.value / convertObj.usd).toFixed(2)
+//       } else {
+//         targetElement.value = (elementValue.value * convertObj.usd).toFixed(2)
+//       }
+//       elementValue.value === '' && (targetElement.value = '')
+//     }
+//   }
+// }
+
+
+// converterChanges(somInput, usdInput, true)
+// converterChanges(usdInput, somInput, false)
+
+const innerConverter = document.querySelector('.inner_converter')
+const inputs = document.querySelectorAll('.input_cash')
+const debouncedHandle = debounce(handleInput, 250)
+let inputElement
+
+function handleInput() {
+  const xhr = new XMLHttpRequest()
+  xhr.open('GET', '../data/converter.json')
+  xhr.setRequestHeader('Content-type', 'application/json')
+  xhr.send()
+  xhr.onload = () => {
+    convertObj = JSON.parse(xhr.response)
+    console.log(convertObj);
+    switch (inputElement.id) {
+      case 'usd':
+        inputs[0].value = (inputElement.value * convertObj.usd).toFixed(2)
+        inputs[2].value = (inputElement.value / (convertObj.usd / convertObj.eur)).toFixed(2)
+        break;
+      case 'som':
+        inputs[1].value = (inputElement.value / convertObj.usd).toFixed(2)
+        inputs[2].value = (inputElement.value / convertObj.eur).toFixed(2)
+        break;
+      case 'eur':
+        inputs[0].value = (inputElement.value * convertObj.eur).toFixed(2)
+        inputs[1].value = (inputElement.value * (convertObj.usd / convertObj.eur)).toFixed(2)
+        break;
+    }
+    if (inputElement.value === '') {
+      inputs.forEach((input) => input.value = '')
+    }
+  }
+}
+
+innerConverter.addEventListener('input', (event) => {
+  inputElement = event.target
+  debouncedHandle()
+})
+
+function debounce(callee, timeoutMs) {
+  return function perform(...args) {
+    let previousCall = this.lastCall
+    this.lastCall = Date.now()
+    if (previousCall && this.lastCall - previousCall <= timeoutMs) {
+      clearTimeout(this.lastCallTimer)
+    }
+    this.lastCallTimer = setTimeout(() => callee(...args), timeoutMs)
+  }
+}
