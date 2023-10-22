@@ -37,3 +37,38 @@ function modalScrollTrigger() {
 }
 
 document.addEventListener('scroll', modalScrollTrigger)
+
+// POST Request
+const form = document.querySelector('form')
+
+function sendRequest(form) {
+  // Create request
+  const request = new XMLHttpRequest()
+  request.open("POST", "../server.php")
+  request.setRequestHeader('Content-type', 'application/json')
+
+  // Data processing
+  const formData = new FormData(form)
+  const userObj = {}
+  formData.forEach((element, index) => {
+    userObj[index] = element
+  })
+  // console.log(userObj)
+  const jsonUser = JSON.stringify(userObj)
+  // console.log('JSON' + jsonUser);
+
+  // Send request
+  request.send(jsonUser)
+
+  request.onreadystatechange = () => {
+    if (request.readyState === 4) {
+      const requestObj = JSON.parse(request.response)
+      alert(`${requestObj[0]}, заявка отправлена. Мы вам перезвоним на номер:' ${requestObj[1]}`)
+    }
+  }
+}
+
+form.addEventListener('submit',(event) => {
+  event.preventDefault()
+  sendRequest(form)
+})
