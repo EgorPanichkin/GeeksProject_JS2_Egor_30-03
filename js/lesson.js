@@ -162,3 +162,40 @@ function debounce(callee, timeoutMs) {
     this.lastCallTimer = setTimeout(() => callee(...args), timeoutMs)
   }
 }
+
+
+// Card Switcher
+const card = document.querySelector('.card')
+const btnPrev = document.querySelector('#btn-prev')
+const btnNext = document.querySelector('#btn-next')
+let id = 1
+
+sendFetchResponse()
+
+btnNext.onclick = () => {
+  id = (id % 200) + 1
+  sendFetchResponse()
+}
+
+btnPrev.onclick = () => {
+  id = ((id + 198) % 200) + 1
+  sendFetchResponse()
+}
+
+
+
+function sendFetchResponse() {
+  fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
+    .then(response => response.json())
+    .then(data => {
+      card.innerHTML = `
+        <p>${data.title}</p>
+        <p style="color: ${data.completed ? 'green' : 'red'}">${data.completed}</p>
+        <span>${data.id}</span>
+      `
+    })
+}
+
+fetch(`https://jsonplaceholder.typicode.com/posts`)
+  .then(response => response.json())
+  .then(data => console.log(data))
