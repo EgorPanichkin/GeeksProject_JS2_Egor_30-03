@@ -88,80 +88,92 @@ setInterval(() => {autoShow()}, 2000);
 
 // Converter
 
-// const somInput = document.querySelector('#som')
-// const usdInput = document.querySelector('#usd')
-// let convertObj
-
-// function converterChanges(elementValue, targetElement, isTrue) {
-//   elementValue.oninput = () => {
-//     const xhr = new XMLHttpRequest()
-//     xhr.open('GET', '../data/converter.json')
-//     xhr.setRequestHeader('Content-type', 'application/json')
-//     xhr.send()
-//     xhr.onload = () => {
-//       convertObj = JSON.parse(xhr.response)
-//       if (isTrue) {
-//         targetElement.value = (elementValue.value / convertObj.usd).toFixed(2)
-//       } else {
-//         targetElement.value = (elementValue.value * convertObj.usd).toFixed(2)
-//       }
-//       elementValue.value === '' && (targetElement.value = '')
-//     }
-//   }
-// }
-
-
-// converterChanges(somInput, usdInput, true)
-// converterChanges(usdInput, somInput, false)
-
 const innerConverter = document.querySelector('.inner_converter')
 const inputs = document.querySelectorAll('.input_cash')
 const debouncedHandle = debounce(handleInput, 250)
 let inputElement
 
-function handleInput() {
-  const xhr = new XMLHttpRequest()
-  xhr.open('GET', '../data/converter.json')
-  xhr.setRequestHeader('Content-type', 'application/json')
-  xhr.send()
-  xhr.onload = () => {
-    convertObj = JSON.parse(xhr.response)
-    console.log(convertObj);
+async function handleInput() {
+  // const xhr = new XMLHttpRequest()
+  // xhr.open('GET', '../data/converter.json')
+  // xhr.setRequestHeader('Content-type', 'application/json')
+  // xhr.send()
+  // xhr.onload = () => {
+  //   convertObj = JSON.parse(xhr.response)
+  //   console.log(convertObj);
+  //   switch (inputElement.id) {
+  //     case 'usd':
+  //       inputs[0].value = (inputElement.value * convertObj.usd).toFixed(2)
+  //       inputs[2].value = (inputElement.value / (convertObj.usd / convertObj.eur)).toFixed(2)
+  //       break;
+  //     case 'som':
+  //       inputs[1].value = (inputElement.value / convertObj.usd).toFixed(2)
+  //       inputs[2].value = (inputElement.value / convertObj.eur).toFixed(2)
+  //       break;
+  //     case 'eur':
+  //       inputs[0].value = (inputElement.value * convertObj.eur).toFixed(2)
+  //       inputs[1].value = (inputElement.value * (convertObj.usd / convertObj.eur)).toFixed(2)
+  //       break;
+  //   }
+  //   if (inputElement.value === '') {
+  //     inputs.forEach((input) => input.value = '')
+  //   }
+  // }
+
+  // fetch('../data/converter.json')
+  //   .then ((response) => response.json())
+  //   .then ((data) => {
+  //     console.log(data)
+  //     switch (inputElement.id) {
+  //       case 'usd':
+  //         inputs[0].value = (inputElement.value * data.usd).toFixed(2)
+  //         inputs[2].value = (inputElement.value / (data.usd / data.eur)).toFixed(2)
+  //         break;
+  //       case 'som':
+  //         inputs[1].value = (inputElement.value / data.usd).toFixed(2)
+  //         inputs[2].value = (inputElement.value / data.eur).toFixed(2)
+  //         break;
+  //       case 'eur':
+  //         inputs[0].value = (inputElement.value * data.eur).toFixed(2)
+  //         inputs[1].value = (inputElement.value * (data.usd / data.eur)).toFixed(2)
+  //         break;
+  //     }
+  //     if (inputElement.value === '') {
+  //       inputs.forEach((input) => input.value = '')
+  //     }
+  //   })
+
+  try {
+    const response = await fetch('../data/converter.json')
+    const data = await response.json()
+    console.log(data)
     switch (inputElement.id) {
       case 'usd':
-        inputs[0].value = (inputElement.value * convertObj.usd).toFixed(2)
-        inputs[2].value = (inputElement.value / (convertObj.usd / convertObj.eur)).toFixed(2)
+        inputs[0].value = (inputElement.value * data.usd).toFixed(2)
+        inputs[2].value = (inputElement.value * (data.usd / data.eur)).toFixed(2)
         break;
       case 'som':
-        inputs[1].value = (inputElement.value / convertObj.usd).toFixed(2)
-        inputs[2].value = (inputElement.value / convertObj.eur).toFixed(2)
+        inputs[1].value = (inputElement.value / data.usd).toFixed(2)
+        inputs[2].value = (inputElement.value / data.eur).toFixed(2)
         break;
       case 'eur':
-        inputs[0].value = (inputElement.value * convertObj.eur).toFixed(2)
-        inputs[1].value = (inputElement.value * (convertObj.usd / convertObj.eur)).toFixed(2)
+        inputs[0].value = (inputElement.value * data.eur).toFixed(2)
+        inputs[1].value = (inputElement.value / (data.usd / data.eur)).toFixed(2)
         break;
     }
     if (inputElement.value === '') {
       inputs.forEach((input) => input.value = '')
     }
+  } catch (error) {
+    console.log("Error: " + error.message);
   }
+  
 }
 
 innerConverter.addEventListener('input', (event) => {
   inputElement = event.target
   debouncedHandle()
 })
-
-function debounce(callee, timeoutMs) {
-  return function perform(...args) {
-    let previousCall = this.lastCall
-    this.lastCall = Date.now()
-    if (previousCall && this.lastCall - previousCall <= timeoutMs) {
-      clearTimeout(this.lastCallTimer)
-    }
-    this.lastCallTimer = setTimeout(() => callee(...args), timeoutMs)
-  }
-}
 
 
 // Card Switcher
@@ -183,7 +195,6 @@ btnPrev.onclick = () => {
 }
 
 
-
 function sendFetchResponse() {
   fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
     .then(response => response.json())
@@ -199,3 +210,40 @@ function sendFetchResponse() {
 fetch(`https://jsonplaceholder.typicode.com/posts`)
   .then(response => response.json())
   .then(data => console.log(data))
+
+// Weather
+const cityNameInput = document.querySelector('.cityName')
+const city = document.querySelector('.city')
+const temp = document.querySelector('.temp')
+const API_KEY = 'e417df62e04d3b1b111abeab19cea714'
+const BASE_URL = 'http://api.openweathermap.org/data/2.5/weather'
+let searchingCity
+
+cityNameInput.oninput = (event) => {
+  searchingCity = event.target.value
+  debounceCityInput()
+}
+
+
+function citySearch() {
+  fetch(`${BASE_URL}?q=${searchingCity}&appid=${API_KEY}`)
+    .then(response => response.json())
+    .then(data => {
+      city.innerHTML = data?.name ? data?.name : 'Город не найден...'
+      temp.innerHTML = data?.main?.temp ? Math.round(data?.main?.temp - 273) + '&deg;C' : '...'
+    })
+}
+
+const debounceCityInput = debounce(citySearch, 500)
+
+// Debounce
+function debounce(callee, timeoutMs) {
+  return function perform(...args) {
+    let previousCall = this.lastCall
+    this.lastCall = Date.now()
+    if (previousCall && this.lastCall - previousCall <= timeoutMs) {
+      clearTimeout(this.lastCallTimer)
+    }
+    this.lastCallTimer = setTimeout(() => callee(...args), timeoutMs)
+  }
+}

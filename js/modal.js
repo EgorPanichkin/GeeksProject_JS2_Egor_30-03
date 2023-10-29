@@ -41,30 +41,46 @@ document.addEventListener('scroll', modalScrollTrigger)
 // POST Request
 const form = document.querySelector('form')
 
-function sendRequest(form) {
-  // Create request
-  const request = new XMLHttpRequest()
-  request.open("POST", "../server.php")
-  request.setRequestHeader('Content-type', 'application/json')
+async function sendRequest(form) {
+  // // Create request
+  // const request = new XMLHttpRequest()
+  // request.open("POST", "../server.php")
+  // request.setRequestHeader('Content-type', 'application/json')
 
-  // Data processing
-  const formData = new FormData(form)
-  const userObj = {}
-  formData.forEach((element, index) => {
-    userObj[index] = element
-  })
-  // console.log(userObj)
-  const jsonUser = JSON.stringify(userObj)
-  // console.log('JSON' + jsonUser);
+  // // Data processing
+  // const formData = new FormData(form)
+  // const userObj = {}
+  // formData.forEach((element, index) => {
+  //   userObj[index] = element
+  // })
+  // // console.log(userObj)
+  // const jsonUser = JSON.stringify(userObj)
+  // // console.log('JSON' + jsonUser);
 
-  // Send request
-  request.send(jsonUser)
+  // // Send request
+  // request.send(jsonUser)
 
-  request.onreadystatechange = () => {
-    if (request.readyState === 4) {
-      const requestObj = JSON.parse(request.response)
-      alert(`${requestObj[0]}, заявка отправлена. Мы вам перезвоним на номер:' ${requestObj[1]}`)
-    }
+  // request.onreadystatechange = () => {
+  //   if (request.readyState === 4) {
+  //     const requestObj = JSON.parse(request.response)
+  //     alert(`${requestObj[0]}, заявка отправлена. Мы вам перезвоним на номер:' ${requestObj[1]}`)
+  //   }
+  // }
+  try {
+    const formData = new FormData(form)
+    const userObj ={}
+    formData.forEach((element, index) => {
+      userObj[index] = element
+    })
+    const response = await fetch('../server.php', {
+      method: 'POST',
+      headers: {'Content-type': 'application/json'},
+      body: JSON.stringify(userObj)
+    })
+    let jsonResp = await response.json()
+    alert(`${jsonResp[0]}, заявка отправлена. Мы вам перезвоним на номер: ${jsonResp[1]}`)
+  } catch (error) {
+    console.log('ERROR');
   }
 }
 
